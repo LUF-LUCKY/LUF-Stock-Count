@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUF · Stock Count Dashboard FY2026</title>
+<link rel="icon" type="image/png" href="logo.png">
+
+<!-- Fonts: 3 ชุด ให้เลือกได้ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&family=Anuphan:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+/* ============================================================
+   THEMES
+   ============================================================ */
+
+/* === THEME: LUF (Brand Default) === */
+[data-theme="luf"] {
+  --bg: #FAFAFA;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F5F5F5;
+  --ink: #1A1A1A;
+  --ink-soft: #404040;
+  --ink-muted: #8A8A8A;
+  --line: #E8E8E8;
+  --line-strong: #D4D4D4;
+  --accent: #FF333F;
+  --accent-soft: #FFE5E7;
+  --accent-deep: #CC1F2A;
+  --secondary: #2D5F5C;
+  --secondary-soft: #DCE9E7;
+  --tertiary: #B8860B;
+  --tertiary-soft: #F5ECD0;
+  --success: #2E7D32;
+  --success-soft: #DCEDD4;
+  --danger: #C62828;
+  --danger-soft: #FBDCDC;
+}
+
+[data-theme="editorial"] {
+  --bg: #F5F2EC; --bg-surface: #FFFFFF; --bg-elevated: #FAF8F4;
+  --ink: #1A1A1A; --ink-soft: #4A4A4A; --ink-muted: #8C8C88;
+  --line: #E5E0D6; --line-strong: #D4CDBE;
+  --accent: #C4421C; --accent-soft: #F4E4DC; --accent-deep: #8B2F14;
+  --secondary: #2D5F5C; --secondary-soft: #DCE9E7;
+  --tertiary: #B8860B; --tertiary-soft: #F5ECD0;
+  --success: #4A6B2F; --success-soft: #E0E9D2;
+  --danger: #A02D2D; --danger-soft: #F2D9D9;
+}
+
+[data-theme="corporate"] {
+  --bg: #F8FAFC; --bg-surface: #FFFFFF; --bg-elevated: #F1F5F9;
+  --ink: #0F172A; --ink-soft: #334155; --ink-muted: #94A3B8;
+  --line: #E2E8F0; --line-strong: #CBD5E1;
+  --accent: #2563EB; --accent-soft: #DBEAFE; --accent-deep: #1D4ED8;
+  --secondary: #0891B2; --secondary-soft: #CFFAFE;
+  --tertiary: #F59E0B; --tertiary-soft: #FEF3C7;
+  --success: #10B981; --success-soft: #D1FAE5;
+  --danger: #EF4444; --danger-soft: #FEE2E2;
+}
+
+[data-theme="midnight"] {
+  --bg: #0A0E14; --bg-surface: #141921; --bg-elevated: #1C2230;
+  --ink: #F1F5F9; --ink-soft: #CBD5E1; --ink-muted: #64748B;
+  --line: #1F2937; --line-strong: #334155;
+  --accent: #FF4757; --accent-soft: #4A1B1F; --accent-deep: #FF6B7A;
+  --secondary: #06B6D4; --secondary-soft: #164E63;
+  --tertiary: #F59E0B; --tertiary-soft: #78350F;
+  --success: #22C55E; --success-soft: #14532D;
+  --danger: #F87171; --danger-soft: #7F1D1D;
+}
+
+[data-theme="sunset"] {
+  --bg: #FFF7ED; --bg-surface: #FFFFFF; --bg-elevated: #FFEDD5;
+  --ink: #431407; --ink-soft: #7C2D12; --ink-muted: #C2410C;
+  --line: #FED7AA; --line-strong: #FDBA74;
+  --accent: #EA580C; --accent-soft: #FFEDD5; --accent-deep: #C2410C;
+  --secondary: #DC2626; --secondary-soft: #FECACA;
+  --tertiary: #CA8A04; --tertiary-soft: #FEF3C7;
+  --success: #65A30D; --success-soft: #ECFCCB;
+  --danger: #B91C1C; --danger-soft: #FECACA;
+}
+
+[data-theme="forest"] {
+  --bg: #F0FDF4; --bg-surface: #FFFFFF; --bg-elevated: #DCFCE7;
+  --ink: #14532D; --ink-soft: #166534; --ink-muted: #4D7C5A;
+  --line: #BBF7D0; --line-strong: #86EFAC;
+  --accent: #15803D; --accent-soft: #DCFCE7; --accent-deep: #14532D;
+  --secondary: #0D9488; --secondary-soft: #CCFBF1;
+  --tertiary: #84CC16; --tertiary-soft: #ECFCCB;
+  --success: #16A34A; --success-soft: #BBF7D0;
+  --danger: #DC2626; --danger-soft: #FECACA;
+}
+
+[data-theme="royal"] {
+  --bg: #FAF5FF; --bg-surface: #FFFFFF; --bg-elevated: #F3E8FF;
+  --ink: #3B0764; --ink-soft: #581C87; --ink-muted: #9333EA;
+  --line: #E9D5FF; --line-strong: #D8B4FE;
+  --accent: #7E22CE; --accent-soft: #F3E8FF; --accent-deep: #581C87;
+  --secondary: #DB2777; --secondary-soft: #FCE7F3;
+  --tertiary: #6366F1; --tertiary-soft: #E0E7FF;
+  --success: #16A34A; --success-soft: #DCFCE7;
+  --danger: #DC2626; --danger-soft: #FECACA;
+}
+
+/* ============================================================
+   FONT SETS (เลือกได้ผ่าน data-font)
+   ============================================================ */
+
+[data-font="ibm"] {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'IBM Plex Sans Thai', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+[data-font="prompt"] {
+  --font-display: 'Prompt', sans-serif;
+  --font-sans: 'Prompt', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+[data-font="sarabun"] {
+  --font-display: 'Sarabun', sans-serif;
+  --font-sans: 'Sarabun', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+[data-font="noto"] {
+  --font-display: 'Noto Sans Thai', sans-serif;
+  --font-sans: 'Noto Sans Thai', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+[data-font="anuphan"] {
+  --font-display: 'Anuphan', sans-serif;
+  --font-sans: 'Anuphan', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+[data-font="bai"] {
+  --font-display: 'Bai Jamjuree', sans-serif;
+  --font-sans: 'Bai Jamjuree', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+/* ============================================================
+   LAYOUT SETS (เลือกได้ผ่าน data-layout)
+   ============================================================ */
+
+[data-layout="spacious"] {
+  --layout-max: 1400px;
+  --layout-pad: 32px;
+  --layout-gap: 32px;
+  --card-pad: 24px;
+  --card-radius: 12px;
+  --kpi-min: 220px;
+  --chart-h: 280px;
+  --table-rows: 25;
+}
+
+[data-layout="compact"] {
+  --layout-max: 1280px;
+  --layout-pad: 20px;
+  --layout-gap: 20px;
+  --card-pad: 16px;
+  --card-radius: 8px;
+  --kpi-min: 180px;
+  --chart-h: 220px;
+  --table-rows: 50;
+}
+
+[data-layout="wide"] {
+  --layout-max: 1800px;
+  --layout-pad: 40px;
+  --layout-gap: 36px;
+  --card-pad: 28px;
+  --card-radius: 14px;
+  --kpi-min: 260px;
+  --chart-h: 320px;
+  --table-rows: 30;
+}
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+:root {
+  --radius: 6px;
+  --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 25% 20%, var(--accent-soft), transparent 50%),
+    radial-gradient(circle at 80% 75%, var(--secondary-soft), transparent 50%);
+  opacity: 0.35;
+  z-index: 0;
+  transition: opacity 0.3s ease;
+}
+
+.container {
+  max-width: var(--layout-max);
+  margin: 0 auto;
+  padding: var(--layout-pad) var(--layout-pad) calc(var(--layout-pad) * 2);
+  position: relative;
+  z-index: 1;
+}
+
+/* ============== HEADER ============== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 24px;
+  margin-bottom: var(--layout-gap);
+  border-bottom: 2px solid var(--ink);
+  position: relative;
+  gap: 24px;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ink);
+}
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.brand-logo {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  object-fit: contain;
+  transition: var(--transition);
+}
+
+[data-layout="compact"] .brand-logo { width: 48px; height: 48px; }
+[data-layout="wide"] .brand-logo { width: 72px; height: 72px; }
+
+.brand { display: flex; flex-direction: column; gap: 4px; }
+
+.brand-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+[data-layout="compact"] .brand-title { font-size: 28px; }
+[data-layout="wide"] .brand-title { font-size: 42px; }
+
+.brand-title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+[data-font="prompt"] .brand-title em,
+[data-font="sarabun"] .brand-title em,
+[data-font="noto"] .brand-title em,
+[data-font="anuphan"] .brand-title em,
+[data-font="bai"] .brand-title em {
+  font-style: normal;
+  font-weight: 700;
+}
+
+.brand-subtitle { font-size: 13px; color: var(--ink-muted); margin-top: 2px; }
+
+.header-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  position: relative;
+}
+
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: var(--success);
+  opacity: 0.3;
+  animation: pulse 2s infinite;
+}
+
+.status.loading .status-dot { background: var(--tertiary); }
+.status.loading .status-dot::after { background: var(--tertiary); }
+.status.error .status-dot { background: var(--danger); }
+.status.error .status-dot::after { background: var(--danger); animation: none; }
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.3; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.last-update { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); }
+
+.icon-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn:hover { background: var(--ink); color: var(--bg); }
+.icon-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ============== THEME PANEL ============== */
+.theme-trigger {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 50;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--line-strong);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.theme-trigger:hover {
+  transform: rotate(45deg) scale(1.1);
+  border-color: var(--accent);
+}
+
+.theme-panel {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 49;
+  width: 360px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: var(--transition);
+}
+
+.theme-panel.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+.theme-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.theme-panel-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.theme-panel-close {
+  background: transparent;
+  border: none;
+  color: var(--ink-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.theme-panel-close:hover { color: var(--ink); background: var(--bg-elevated); }
+
+.theme-section { margin-bottom: 20px; }
+.theme-section:last-child { margin-bottom: 0; }
+
+.theme-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.theme-option {
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-sans);
+}
+
+.theme-option:hover { border-color: var(--ink-soft); transform: translateY(-1px); }
+.theme-option.active { border-color: var(--accent); background: var(--accent-soft); }
+
+.theme-swatches { display: flex; gap: 3px; }
+.theme-swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); }
+.theme-option-name { font-size: 12px; font-weight: 500; color: var(--ink); }
+.theme-option-desc { font-size: 10px; color: var(--ink-muted); }
+
+.option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.option-row {
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-sans);
+}
+
+.option-row:hover { border-color: var(--ink-soft); }
+.option-row.active { border-color: var(--accent); background: var(--accent-soft); }
+
+.option-row-info { display: flex; flex-direction: column; gap: 2px; }
+.option-row-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.option-row-desc { font-size: 10.5px; color: var(--ink-muted); }
+.option-row-preview {
+  font-size: 13px;
+  color: var(--ink-soft);
+  padding-left: 12px;
+}
+
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.color-picker-row input[type="color"] {
+  width: 44px; height: 36px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: transparent;
+  padding: 2px;
+}
+
+.color-picker-row input[type="text"] {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 8px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+.color-picker-row input[type="text"]:focus { outline: none; border-color: var(--accent); }
+
+.theme-reset {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-soft);
+  padding: 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.theme-reset:hover { background: var(--bg-elevated); color: var(--ink); }
+
+/* ============== KPI ============== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--kpi-min), 1fr));
+  gap: 14px;
+  margin-bottom: var(--layout-gap);
+}
+
+.kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  padding: var(--card-pad);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+.kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--accent);
+}
+
+.kpi-card.teal::before { background: var(--secondary); }
+.kpi-card.gold::before { background: var(--tertiary); }
+.kpi-card.green::before { background: var(--success); }
+
+.kpi-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+[data-layout="compact"] .kpi-value { font-size: 24px; }
+[data-layout="wide"] .kpi-value { font-size: 34px; }
+
+.kpi-unit {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink-muted);
+  margin-left: 4px;
+}
+
+.kpi-sublabel { font-size: 12px; color: var(--ink-soft); margin-top: 6px; }
+
+/* ============== SECTION ============== */
+.section { margin-bottom: var(--layout-gap); }
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+[data-layout="compact"] .section-title { font-size: 18px; }
+[data-layout="wide"] .section-title { font-size: 24px; }
+
+.section-title-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+/* ============== CHARTS ============== */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
+
+.chart-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  padding: var(--card-pad);
+}
+
+.chart-card-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.chart-card-subtitle { font-size: 12px; color: var(--ink-muted); margin-bottom: 18px; }
+.chart-wrap { position: relative; height: var(--chart-h); }
+
+/* ============== DAILY PROGRESS ============== */
+.section-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+}
+
+.daily-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) { .daily-grid { grid-template-columns: 1fr; } }
+
+.daily-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  padding: var(--card-pad);
+}
+
+.daily-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.daily-stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--accent);
+}
+
+.daily-stat-card .kpi-value { font-size: 24px; }
+
+/* ============== TOP 10 ============== */
+.top10-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+}
+
+.top10-toolbar {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-elevated);
+}
+
+.top10-info { display: flex; align-items: center; gap: 12px; }
+
+.top10-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.top10-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.top10-item {
+  display: grid;
+  grid-template-columns: 40px 70px 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s ease;
+}
+
+.top10-item:last-child { border-bottom: none; }
+.top10-item:hover { background: var(--bg-elevated); }
+
+.top10-rank {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.top10-rank-1 { color: var(--danger); }
+.top10-rank-2 { color: var(--accent); }
+.top10-rank-3 { color: var(--tertiary); }
+
+.top10-type {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-align: center;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+}
+
+.top10-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.top10-code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-muted);
+}
+
+.top10-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top10-qty {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  min-width: 90px;
+}
+
+.top10-qty-label {
+  display: block;
+  font-size: 9.5px;
+  color: var(--ink-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.top10-amount {
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  min-width: 110px;
+}
+
+.top10-empty {
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--success);
+  font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .top10-item {
+    grid-template-columns: 32px 1fr auto;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+  .top10-type { display: none; }
+  .top10-qty { display: none; }
+  .top10-amount { font-size: 14px; min-width: auto; }
+}
+
+/* ============== TABLE ============== */
+.table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+}
+
+.table-toolbar {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: var(--bg-elevated);
+}
+
+[data-layout="compact"] .table-toolbar { padding: 14px 18px; }
+
+.search-box { flex: 1; min-width: 220px; position: relative; }
+
+.search-box input {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  padding: 10px 14px 10px 38px;
+  background: var(--bg-surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  transition: border 0.15s ease;
+}
+
+.search-box input:focus { outline: none; border-color: var(--accent); }
+
+.search-box::before {
+  content: "⌕";
+  position: absolute;
+  left: 14px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+
+.filter-select {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  padding: 10px 32px 10px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' fill='none' stroke='currentColor' stroke-width='1.5'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.export-group { display: flex; gap: 8px; margin-left: auto; }
+
+.date-range-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 3px 8px;
+}
+
+.filter-date {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  cursor: pointer;
+  width: 130px;
+  color-scheme: light dark;
+}
+
+.filter-date:focus { outline: none; }
+.filter-date::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; }
+.filter-date::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+.date-sep { color: var(--ink-muted); font-size: 12px; }
+
+.date-clear {
+  background: transparent;
+  border: none;
+  color: var(--ink-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.date-clear:hover { background: var(--bg-elevated); color: var(--danger); }
+
+.export-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.export-btn:hover { background: var(--accent); }
+.export-btn.outline { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+.export-btn.outline:hover { background: var(--ink); color: var(--bg); }
+
+.table-wrap { overflow-x: auto; max-height: 600px; overflow-y: auto; }
+
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+
+thead { position: sticky; top: 0; z-index: 2; background: var(--bg-elevated); }
+
+thead th {
+  text-align: left;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line-strong);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+[data-layout="compact"] thead th { padding: 8px 12px; font-size: 10px; }
+
+thead th:hover { color: var(--accent); }
+thead th.num { text-align: right; }
+thead th .sort-ind { opacity: 0.4; margin-left: 4px; }
+thead th.sorted .sort-ind { opacity: 1; color: var(--accent); }
+
+tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+[data-layout="compact"] tbody td { padding: 7px 12px; font-size: 12px; }
+
+tbody td.num { text-align: right; font-family: var(--font-mono); font-size: 12px; }
+tbody tr:hover { background: var(--bg-elevated); }
+tbody tr:last-child td { border-bottom: none; }
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+}
+
+.badge.teal { background: var(--secondary-soft); color: var(--secondary); }
+.badge.gold { background: var(--tertiary-soft); color: var(--tertiary); }
+.badge.green { background: var(--success-soft); color: var(--success); }
+.badge.red { background: var(--danger-soft); color: var(--danger); }
+
+.table-footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-elevated);
+}
+
+.pagination { display: flex; gap: 4px; align-items: center; }
+
+.pagination button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-soft);
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 28px;
+  transition: var(--transition);
+}
+
+.pagination button:hover:not(:disabled) { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.pagination button.active { background: var(--accent); color: var(--bg-surface); border-color: var(--accent); }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ============== LOADING / EMPTY ============== */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.spinner {
+  width: 40px; height: 40px;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty { padding: 60px 24px; text-align: center; color: var(--ink-muted); font-size: 13px; }
+
+/* ============== FOOTER ============== */
+.footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-brand img {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============== MOBILE ============== */
+@media (max-width: 640px) {
+  .container { padding: 20px 16px 40px; }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-right: 60px;
+  }
+  .header-meta { align-items: flex-start; text-align: left; }
+  .brand-wrap { gap: 12px; }
+  .brand-logo { width: 48px; height: 48px; }
+  .brand-title { font-size: 26px; }
+  .kpi-value { font-size: 24px; }
+  .table-toolbar { flex-direction: column; align-items: stretch; }
+  .export-group { margin-left: 0; }
+  .theme-trigger { top: 16px; right: 16px; width: 40px; height: 40px; font-size: 18px; }
+  .theme-panel { top: 64px; right: 16px; left: 16px; width: auto; }
+}
+</style>
+</head>
+<body data-theme="luf" data-font="ibm" data-layout="spacious">
+
+<!-- THEME TRIGGER -->
+<button class="theme-trigger" onclick="toggleThemePanel()" aria-label="Open settings">⚙</button>
+
+<!-- THEME PANEL -->
+<div class="theme-panel" id="themePanel">
+  <div class="theme-panel-header">
+    <span class="theme-panel-title">Customize</span>
+    <button class="theme-panel-close" onclick="toggleThemePanel()" aria-label="Close">✕</button>
+  </div>
+
+  <!-- THEMES -->
+  <div class="theme-section">
+    <span class="theme-label">Color Theme</span>
+    <div class="theme-grid">
+      <button class="theme-option" data-theme-name="luf" onclick="setTheme('luf')">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#FAFAFA"></div>
+          <div class="theme-swatch" style="background:#FF333F"></div>
+          <div class="theme-swatch" style="background:#1A1A1A"></div>
+        </div>
+        <div class="theme-option-name">LUF Brand</div>
+        <div class="theme-option-desc">สีโลโก้ LUF</div>
+      </button>
+
+      <button class="theme-option" data-theme-name="editorial" onclick="setTheme('editorial')">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#F5F2EC"></div>
+          <div class="theme-swatch" style="background:#C4421C"></div>
+          <div class="theme-swatch" style="background:#2D5F5C"></div>
+        </div>
+        <div class="theme-option-name">Editorial</div>
+        <div class="theme-option-desc">โทนกระดาษ</div>
+      </button>
+
+      <button class="theme-option" data-theme-name="corporate" onclick="setTheme('corporate')">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#FFFFFF"></div>
+          <div class="theme-swatch" style="background:#2563EB"></div>
+          <div class="theme-swatch" style="background:#0891B2"></div>
+        </div>
+        <div class="theme-option-name">Corporate</div>
+        <div class="theme-option-desc">ฟ้าน้ำเงิน ทางการ</div>
+      </button>
+
+      <button class="theme-option" data-theme-name="midnight" onclick="setTheme('midnight')">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#0A0E14"></div>
+          <div class="theme-swatch" style="background:#FF4757"></div>
+          <div class="theme-swatch" style="background:#06B6D4"></div>
+        </div>
+        <div class="theme-option-name">Midnight</div>
+        <div class="theme-option-desc">ดำ โหมดมืด</div>
+      </button>
+
+      <button class="theme-option" data-theme-name="sunset" onclick="setTheme('sunset')">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#FFF7ED"></div>
+          <div class="theme-swatch" style="background:#EA580C"></div>
+          <div class="theme-swatch" style="background:#DC2626"></div>
+        </div>
+        <div class="theme-option-name">Sunset</div>
+        <div class="theme-option-desc">ส้มแดง พลังงานสูง</div>
+      </button>
+
+      <button class="theme-option" data-theme-name="forest" onclick="setTheme('forest')">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#F0FDF4"></div>
+          <div class="theme-swatch" style="background:#15803D"></div>
+          <div class="theme-swatch" style="background:#0D9488"></div>
+        </div>
+        <div class="theme-option-name">Forest</div>
+        <div class="theme-option-desc">เขียวธรรมชาติ</div>
+      </button>
+
+      <button class="theme-option" data-theme-name="royal" onclick="setTheme('royal')">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#FAF5FF"></div>
+          <div class="theme-swatch" style="background:#7E22CE"></div>
+          <div class="theme-swatch" style="background:#DB2777"></div>
+        </div>
+        <div class="theme-option-name">Royal</div>
+        <div class="theme-option-desc">ม่วงชมพู หรูหรา</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- FONTS -->
+  <div class="theme-section">
+    <span class="theme-label">Typography</span>
+    <div class="option-list">
+      <button class="option-row" data-font-name="ibm" onclick="setFont('ibm')">
+        <div class="option-row-info">
+          <span class="option-row-name">IBM Plex (Default)</span>
+          <span class="option-row-desc">โมเดิร์น + Display serif</span>
+        </div>
+        <span class="option-row-preview" style="font-family: 'IBM Plex Sans Thai'">ทดสอบ Aa</span>
+      </button>
+      <button class="option-row" data-font-name="prompt" onclick="setFont('prompt')">
+        <div class="option-row-info">
+          <span class="option-row-name">Prompt</span>
+          <span class="option-row-desc">เรียบ ทันสมัย คนนิยม</span>
+        </div>
+        <span class="option-row-preview" style="font-family: 'Prompt'">ทดสอบ Aa</span>
+      </button>
+      <button class="option-row" data-font-name="sarabun" onclick="setFont('sarabun')">
+        <div class="option-row-info">
+          <span class="option-row-name">Sarabun</span>
+          <span class="option-row-desc">ราชการ อ่านง่าย</span>
+        </div>
+        <span class="option-row-preview" style="font-family: 'Sarabun'">ทดสอบ Aa</span>
+      </button>
+      <button class="option-row" data-font-name="noto" onclick="setFont('noto')">
+        <div class="option-row-info">
+          <span class="option-row-name">Noto Sans Thai</span>
+          <span class="option-row-desc">Google มาตรฐาน</span>
+        </div>
+        <span class="option-row-preview" style="font-family: 'Noto Sans Thai'">ทดสอบ Aa</span>
+      </button>
+      <button class="option-row" data-font-name="anuphan" onclick="setFont('anuphan')">
+        <div class="option-row-info">
+          <span class="option-row-name">Anuphan</span>
+          <span class="option-row-desc">มินิมอล สวยสะอาด</span>
+        </div>
+        <span class="option-row-preview" style="font-family: 'Anuphan'">ทดสอบ Aa</span>
+      </button>
+      <button class="option-row" data-font-name="bai" onclick="setFont('bai')">
+        <div class="option-row-info">
+          <span class="option-row-name">Bai Jamjuree</span>
+          <span class="option-row-desc">เทคโน เครื่อง+มือ</span>
+        </div>
+        <span class="option-row-preview" style="font-family: 'Bai Jamjuree'">ทดสอบ Aa</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="theme-section">
+    <span class="theme-label">Layout Density</span>
+    <div class="option-list">
+      <button class="option-row" data-layout-name="spacious" onclick="setLayout('spacious')">
+        <div class="option-row-info">
+          <span class="option-row-name">Spacious (Default)</span>
+          <span class="option-row-desc">เว้นระยะมาก ดูสบายตา</span>
+        </div>
+        <span class="option-row-preview">▦</span>
+      </button>
+      <button class="option-row" data-layout-name="compact" onclick="setLayout('compact')">
+        <div class="option-row-info">
+          <span class="option-row-name">Compact</span>
+          <span class="option-row-desc">เน้นข้อมูล แสดงเยอะ</span>
+        </div>
+        <span class="option-row-preview">▤</span>
+      </button>
+      <button class="option-row" data-layout-name="wide" onclick="setLayout('wide')">
+        <div class="option-row-info">
+          <span class="option-row-name">Wide</span>
+          <span class="option-row-desc">หน้าจอกว้าง พรีเซ้นต์</span>
+        </div>
+        <span class="option-row-preview">▥</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- CUSTOM ACCENT -->
+  <div class="theme-section">
+    <span class="theme-label">Custom Accent Color</span>
+    <div class="color-picker-row">
+      <input type="color" id="accentPicker" value="#FF333F" onchange="setCustomAccent(this.value)">
+      <input type="text" id="accentInput" value="#FF333F" onchange="setCustomAccent(this.value)" maxlength="7">
+    </div>
+    <p style="font-size: 11px; color: var(--ink-muted); margin-top: 6px;">เลือกสีหลักเอง (จะ override ธีม)</p>
+  </div>
+
+  <!-- RESET -->
+  <div class="theme-section">
+    <button class="theme-reset" onclick="resetAll()">↺ Reset All to LUF Default</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <header class="header">
+    <div class="brand-wrap">
+      <img src="logo.png" alt="LUF Logo" class="brand-logo">
+      <div class="brand">
+        <span class="brand-tag">— LUF · Stock Count FY2026</span>
+        <h1 class="brand-title">Inventory <em>Summary</em></h1>
+        <p class="brand-subtitle">รายงานสรุปผลการนับสต็อก Semi-FG &amp; Materials</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="status" id="status">
+        <span class="status-dot"></span>
+        <span id="statusText">CONNECTED</span>
+      </span>
+      <span class="last-update" id="lastUpdate">— —</span>
+      <button class="icon-btn" id="refreshBtn" onclick="loadData()">
+        <span id="refreshIcon">↻</span> Refresh
+      </button>
+    </div>
+  </header>
+
+  <section class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Items</div>
+      <div class="kpi-value" id="kpiItems">—</div>
+      <div class="kpi-sublabel">รายการในคลัง</div>
+    </div>
+    <div class="kpi-card teal">
+      <div class="kpi-label">Stock Value</div>
+      <div class="kpi-value" id="kpiValue">— <span class="kpi-unit">฿M</span></div>
+      <div class="kpi-sublabel">มูลค่ารวม</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-label">COUNTED (ITEM)</div>
+      <div class="kpi-value" id="kpiCounted">— <span class="kpi-unit">%</span></div>
+      <div class="kpi-sublabel">อัตราการนับ (รายการ)</div>
+    </div>
+    <div class="kpi-card" style="--card-accent: var(--danger);">
+      <div class="kpi-label">REMAINING (ITEM)</div>
+      <div class="kpi-value" id="kpiRemaining">—</div>
+      <div class="kpi-sublabel">เหลือต้องนับ (Target)</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Variance</div>
+      <div class="kpi-value" id="kpiVariance">—</div>
+      <div class="kpi-sublabel">ผลต่างจากนับจริง (฿)</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title"><span class="section-title-num">01</span> Visual Summary</h2>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">Stock value by material type</div>
+        <div class="chart-card-subtitle">เปรียบเทียบมูลค่ารวม vs. มูลค่าที่นับได้</div>
+        <div class="chart-wrap"><canvas id="chartValue"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Count ratio by category</div>
+        <div class="chart-card-subtitle">เปอร์เซ็นต์การนับเทียบกับยอดสต็อก</div>
+        <div class="chart-wrap"><canvas id="chartRatio"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title"><span class="section-title-num">02</span> Daily Progress</h2>
+      <span class="section-sub" id="dailySubtitle">รายงานการนับรายวัน</span>
+    </div>
+    <div class="daily-grid">
+      <div class="daily-card">
+        <div class="chart-card-title">Items counted per day</div>
+        <div class="chart-card-subtitle">จำนวนรายการที่ถูกนับในแต่ละวัน (Last 14 days)</div>
+        <div class="chart-wrap" style="height: 240px;"><canvas id="chartDaily"></canvas></div>
+      </div>
+      <div class="daily-stats">
+        <div class="daily-stat-card">
+          <div class="kpi-label">Today's Count</div>
+          <div class="kpi-value" id="dailyToday">—</div>
+          <div class="kpi-sublabel">รายการที่นับวันนี้</div>
+        </div>
+        <div class="daily-stat-card">
+          <div class="kpi-label">Yesterday</div>
+          <div class="kpi-value" id="dailyYesterday">—</div>
+          <div class="kpi-sublabel">รายการที่นับเมื่อวาน</div>
+        </div>
+        <div class="daily-stat-card">
+          <div class="kpi-label">Active Days</div>
+          <div class="kpi-value" id="dailyActiveDays">—</div>
+          <div class="kpi-sublabel">จำนวนวันที่มีการนับ</div>
+        </div>
+        <div class="daily-stat-card">
+          <div class="kpi-label">Avg / Day</div>
+          <div class="kpi-value" id="dailyAvg">—</div>
+          <div class="kpi-sublabel">เฉลี่ยต่อวัน (active days)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title"><span class="section-title-num">03</span> Top 10 Not Counted</h2>
+      <span class="section-sub">รายการที่ควรนับก่อน (เรียงตามมูลค่า)</span>
+    </div>
+    <div class="top10-card">
+      <div class="top10-toolbar">
+        <div class="top10-info">
+          <span class="top10-badge" id="top10Badge">— items remaining</span>
+        </div>
+        <select class="filter-select" id="top10SortBy" onchange="renderTop10()">
+          <option value="amount">เรียงตามมูลค่า (สูง→ต่ำ)</option>
+          <option value="unit">เรียงตามจำนวน (สูง→ต่ำ)</option>
+          <option value="type">เรียงตาม Material Type</option>
+        </select>
+      </div>
+      <div class="top10-list" id="top10List">
+        <!-- Items will be rendered here -->
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title"><span class="section-title-num">04</span> Detailed Inventory</h2>
+    </div>
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="ค้นหา Material Code, Description, Location…">
+        </div>
+        <select class="filter-select" id="filterType">
+          <option value="">All Material Types</option>
+        </select>
+        <select class="filter-select" id="filterLocation">
+          <option value="">All Locations</option>
+        </select>
+        <select class="filter-select" id="filterCountStatus">
+          <option value="">All Count Status</option>
+          <option value="not-counted">⊘ Not Counted (Target)</option>
+          <option value="counted">✓ Counted</option>
+          <option value="partial">◐ Partially Counted</option>
+        </select>
+        <div class="date-range-group">
+          <input type="date" id="filterDateFrom" class="filter-date" title="From date">
+          <span class="date-sep">→</span>
+          <input type="date" id="filterDateTo" class="filter-date" title="To date">
+          <button class="date-clear" onclick="clearDateFilter()" title="Clear date filter">✕</button>
+        </div>
+        <div class="export-group">
+          <button class="export-btn outline" onclick="exportToExcel()">↓ Excel</button>
+          <button class="export-btn" onclick="exportToPDF()">↓ PDF</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead><tr id="tableHead"></tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <span id="resultCount">— rows</span>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <img src="logo.png" alt="LUF">
+      <span>LUF · STOCK COUNT DASHBOARD · FY2026</span>
+    </div>
+    <span id="footerUpdate">Auto-refresh every 60s</span>
+  </footer>
+
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbyvIn5JKXeLLh_FUQw8DRoM-2khWeOQlDUnsqP4nQ3-0NA-bnn72vBlafNtr9jqwhNprQ/exec';
+const USE_DEMO_DATA = API_URL.startsWith('PASTE_');
+const REFRESH_INTERVAL_MS = 60000;
+const ROWS_PER_PAGE_BY_LAYOUT = { spacious: 25, compact: 50, wide: 30 };
+
+// ============================================================
+// THEME / FONT / LAYOUT SYSTEM
+// ============================================================
+const THEME_ACCENTS = {
+  luf: '#FF333F',
+  editorial: '#C4421C',
+  corporate: '#2563EB',
+  midnight: '#FF4757',
+  sunset: '#EA580C',
+  forest: '#15803D',
+  royal: '#7E22CE'
+};
+
+function toggleThemePanel() {
+  document.getElementById('themePanel').classList.toggle('open');
+}
+
+function setTheme(name) {
+  document.body.setAttribute('data-theme', name);
+  document.body.style.removeProperty('--accent');
+  document.body.style.removeProperty('--accent-soft');
+  document.body.style.removeProperty('--accent-deep');
+
+  document.querySelectorAll('[data-theme-name]').forEach(b => {
+    b.classList.toggle('active', b.dataset.themeName === name);
+  });
+
+  const accent = THEME_ACCENTS[name] || '#FF333F';
+  document.getElementById('accentPicker').value = accent;
+  document.getElementById('accentInput').value = accent.toUpperCase();
+
+  localStorage.setItem('dashboard-theme', name);
+  localStorage.removeItem('dashboard-custom-accent');
+
+  if (chartValue) renderCharts();
+}
+
+function setFont(name) {
+  document.body.setAttribute('data-font', name);
+  document.querySelectorAll('[data-font-name]').forEach(b => {
+    b.classList.toggle('active', b.dataset.fontName === name);
+  });
+  localStorage.setItem('dashboard-font', name);
+  if (chartValue) renderCharts();
+}
+
+function setLayout(name) {
+  document.body.setAttribute('data-layout', name);
+  document.querySelectorAll('[data-layout-name]').forEach(b => {
+    b.classList.toggle('active', b.dataset.layoutName === name);
+  });
+  localStorage.setItem('dashboard-layout', name);
+  currentPage = 1;
+  if (allData.length) renderTable();
+}
+
+function setCustomAccent(hex) {
+  if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) return;
+  document.body.style.setProperty('--accent', hex);
+  document.body.style.setProperty('--accent-soft', hex + '22');
+  document.body.style.setProperty('--accent-deep', shadeColor(hex, -20));
+  document.getElementById('accentPicker').value = hex;
+  document.getElementById('accentInput').value = hex.toUpperCase();
+  localStorage.setItem('dashboard-custom-accent', hex);
+  if (chartValue) renderCharts();
+}
+
+function shadeColor(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = (num >> 16) + amt;
+  const G = (num >> 8 & 0x00FF) + amt;
+  const B = (num & 0x0000FF) + amt;
+  return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+    (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+    (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+}
+
+function resetAll() {
+  setTheme('luf');
+  setFont('ibm');
+  setLayout('spacious');
+  localStorage.removeItem('dashboard-custom-accent');
+}
+
+function loadSavedPreferences() {
+  const theme = localStorage.getItem('dashboard-theme') || 'luf';
+  const font = localStorage.getItem('dashboard-font') || 'ibm';
+  const layout = localStorage.getItem('dashboard-layout') || 'spacious';
+  setTheme(theme);
+  setFont(font);
+  setLayout(layout);
+  const customAccent = localStorage.getItem('dashboard-custom-accent');
+  if (customAccent) setCustomAccent(customAccent);
+}
+
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('themePanel');
+  const trigger = document.querySelector('.theme-trigger');
+  if (panel.classList.contains('open') &&
+      !panel.contains(e.target) &&
+      !trigger.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+
+// ============================================================
+// DATA & STATE
+// ============================================================
+let allData = [];
+let allSummary = [];
+let filteredData = [];
+let currentPage = 1;
+let sortColumn = null;
+let sortDir = 'asc';
+let chartValue, chartRatio;
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadSavedPreferences();
+  loadData();
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('filterType').addEventListener('change', applyFilters);
+  document.getElementById('filterLocation').addEventListener('change', applyFilters);
+  document.getElementById('filterCountStatus').addEventListener('change', applyFilters);
+  document.getElementById('filterDateFrom').addEventListener('change', applyFilters);
+  document.getElementById('filterDateTo').addEventListener('change', applyFilters);
+  setInterval(loadData, REFRESH_INTERVAL_MS);
+});
+
+async function loadData() {
+  setStatus('loading', 'FETCHING…');
+  document.getElementById('refreshBtn').disabled = true;
+  document.getElementById('refreshIcon').style.animation = 'spin 0.8s linear infinite';
+
+  try {
+    let json;
+    if (USE_DEMO_DATA) {
+      json = getDemoData();
+    } else {
+      const res = await fetch(API_URL + '?action=all');
+      json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Unknown error');
+    }
+
+    allSummary = json.summary?.summary || [];
+    allData = json.data?.data || [];
+
+    renderKPI();
+    renderCharts();
+    renderDailyProgress();
+    renderTop10();
+    populateFilters();
+    applyFilters();
+
+    const ts = json.lastUpdated || new Date().toISOString();
+    document.getElementById('lastUpdate').textContent = 'Updated ' + formatTime(ts);
+    setStatus('connected', USE_DEMO_DATA ? 'DEMO MODE' : 'CONNECTED');
+  } catch (err) {
+    console.error(err);
+    setStatus('error', 'ERROR');
+    document.getElementById('lastUpdate').textContent = err.message;
+  } finally {
+    document.getElementById('loadingOverlay').style.display = 'none';
+    document.getElementById('refreshBtn').disabled = false;
+    document.getElementById('refreshIcon').style.animation = '';
+  }
+}
+
+function setStatus(type, text) {
+  const el = document.getElementById('status');
+  el.className = 'status ' + (type === 'loading' ? 'loading' : type === 'error' ? 'error' : '');
+  document.getElementById('statusText').textContent = text;
+}
+
+function formatTime(iso) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString('th-TH', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+  } catch { return iso; }
+}
+
+function renderKPI() {
+  const grandTotal = allSummary.find(r => /grand total/i.test(r.materialType)) || {};
+  const totalItems = grandTotal.stock?.item || allData.length;
+  const totalValue = grandTotal.stock?.amount || allSummary.reduce((s, r) => s + (r.stock?.amount || 0), 0);
+
+  // Counted (Item) = Ratio.item × 100 (จากคอลัมน์ V ของ Sheet SUMMARY)
+  const countedItemRatio = (grandTotal.ratio?.item || 0) * 100;
+
+  // Remaining (Item) = Stock Item - (Cycle Item + Physical Item)
+  const countedItems = (grandTotal.cycleCount?.item || 0) + (grandTotal.physicalCount?.item || 0);
+  const remainingItems = totalItems - countedItems;
+
+  // Variance (มูลค่า)
+  const variance = (grandTotal.cycleCount?.diffAmount || 0) + (grandTotal.physicalCount?.diffAmount || 0);
+
+  document.getElementById('kpiItems').textContent = formatNum(totalItems, 0);
+  document.getElementById('kpiValue').innerHTML = formatNum(totalValue / 1e6, 1) + ' <span class="kpi-unit">฿M</span>';
+
+  // Counted (Item) %
+  const countedEl = document.getElementById('kpiCounted');
+  countedEl.innerHTML = formatNum(countedItemRatio, 1) + ' <span class="kpi-unit">%</span>';
+  // ถ้าเกิน 100% แสดงสีเหลือง/แดง, ถ้าครบ 100% เขียว, ต่ำกว่า 80% แดง
+  if (countedItemRatio >= 100) countedEl.style.color = 'var(--success)';
+  else if (countedItemRatio >= 80) countedEl.style.color = 'var(--ink)';
+  else countedEl.style.color = 'var(--danger)';
+
+  // Remaining (Item) — Target ที่ต้องนับเพิ่ม
+  const remEl = document.getElementById('kpiRemaining');
+  if (remainingItems > 0) {
+    // ยังเหลือต้องนับ
+    remEl.innerHTML = formatNum(remainingItems, 0) + ' <span class="kpi-unit">items</span>';
+    remEl.style.color = 'var(--danger)';
+  } else if (remainingItems === 0) {
+    // นับครบ
+    remEl.innerHTML = '<span style="color:var(--success);">✓ Complete</span>';
+  } else {
+    // นับเกิน (เป็นเรื่องปกติของ Cycle Count)
+    remEl.innerHTML = '+' + formatNum(Math.abs(remainingItems), 0) + ' <span class="kpi-unit">over</span>';
+    remEl.style.color = 'var(--tertiary)';
+  }
+
+  // Variance
+  const vEl = document.getElementById('kpiVariance');
+  vEl.innerHTML = (variance < 0 ? '−' : '') + formatNum(Math.abs(variance) / 1e3, 1) + ' <span class="kpi-unit">฿K</span>';
+  vEl.style.color = variance < 0 ? 'var(--danger)' : variance > 0 ? 'var(--success)' : 'var(--ink)';
+}
+
+function formatNum(v, decimals = 0) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return Number(v).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function getThemeColors() {
+  const styles = getComputedStyle(document.body);
+  return {
+    accent: styles.getPropertyValue('--accent').trim() || '#FF333F',
+    secondary: styles.getPropertyValue('--secondary').trim() || '#2D5F5C',
+    tertiary: styles.getPropertyValue('--tertiary').trim() || '#B8860B',
+    success: styles.getPropertyValue('--success').trim() || '#2E7D32',
+    danger: styles.getPropertyValue('--danger').trim() || '#C62828',
+    line: styles.getPropertyValue('--line').trim() || '#E8E8E8',
+    inkMuted: styles.getPropertyValue('--ink-muted').trim() || '#8A8A8A',
+    inkSoft: styles.getPropertyValue('--ink-soft').trim() || '#404040',
+    ink: styles.getPropertyValue('--ink').trim() || '#1A1A1A'
+  };
+}
+
+function getFontFamily() {
+  return getComputedStyle(document.body).getPropertyValue('--font-sans').trim().replace(/['"]/g, '').split(',')[0].trim() || 'IBM Plex Sans Thai';
+}
+
+let chartDaily;
+
+function renderDailyProgress() {
+  // Group items by DATE OF COUNT
+  const byDate = {};
+  allData.forEach(r => {
+    const dateStr = r['DATE OF COUNT'];
+    if (!dateStr) return;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return;
+    const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+    byDate[key] = (byDate[key] || 0) + 1;
+  });
+
+  const sortedDates = Object.keys(byDate).sort();
+  const totalActiveDays = sortedDates.length;
+  const totalCounted = sortedDates.reduce((s, d) => s + byDate[d], 0);
+
+  // Last 14 days (or all if less)
+  const last14 = sortedDates.slice(-14);
+  const labels = last14.map(d => {
+    const dt = new Date(d);
+    return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  });
+  const counts = last14.map(d => byDate[d]);
+
+  // Today / Yesterday
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const todayCount = byDate[today] || 0;
+  const yesterdayCount = byDate[yesterday] || 0;
+
+  // ถ้าวันนี้/เมื่อวานเป็น 0 แสดง latest day แทน
+  const latestDate = sortedDates[sortedDates.length - 1];
+  const todayDisplay = todayCount > 0 ? todayCount : (latestDate ? byDate[latestDate] : 0);
+  const todayLabel = todayCount > 0 ? 'รายการที่นับวันนี้' :
+                     (latestDate ? 'รายการที่นับล่าสุด (' + new Date(latestDate).toLocaleDateString('th-TH', {day:'2-digit',month:'short'}) + ')' : 'รายการที่นับวันนี้');
+
+  document.getElementById('dailyToday').textContent = formatNum(todayDisplay, 0);
+  document.querySelector('#dailyToday + .kpi-sublabel').textContent = todayLabel;
+  document.getElementById('dailyYesterday').textContent = formatNum(yesterdayCount, 0);
+  document.getElementById('dailyActiveDays').textContent = formatNum(totalActiveDays, 0);
+  document.getElementById('dailyAvg').textContent = totalActiveDays ? formatNum(totalCounted / totalActiveDays, 0) : '0';
+
+  // Subtitle
+  if (sortedDates.length > 0) {
+    const first = new Date(sortedDates[0]).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit' });
+    const last = new Date(sortedDates[sortedDates.length - 1]).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit' });
+    document.getElementById('dailySubtitle').textContent = `${first} → ${last}`;
+  }
+
+  // Chart
+  const ctx = document.getElementById('chartDaily').getContext('2d');
+  if (chartDaily) chartDaily.destroy();
+  const colors = getThemeColors();
+  const font = getFontFamily();
+
+  chartDaily = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Items counted',
+        data: counts,
+        backgroundColor: colors.accent,
+        borderRadius: 3,
+        barPercentage: 0.7
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: colors.ink,
+          titleFont: { family: 'IBM Plex Mono', size: 11 },
+          bodyFont: { family: font, size: 12 },
+          padding: 10,
+          callbacks: { label: c => formatNum(c.parsed.y, 0) + ' items' }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: colors.inkMuted } },
+        y: { grid: { color: colors.line }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: colors.inkMuted, precision: 0 } }
+      }
+    }
+  });
+}
+
+function renderTop10() {
+  const notCounted = allData.filter(r => {
+    const countQty = Number(r['COUNT']) || 0;
+    return countQty === 0;
+  });
+
+  const sortBy = document.getElementById('top10SortBy').value;
+
+  if (sortBy === 'amount') {
+    notCounted.sort((a, b) => (Number(b['AMOUNT']) || 0) - (Number(a['AMOUNT']) || 0));
+  } else if (sortBy === 'unit') {
+    notCounted.sort((a, b) => (Number(b['UNIT']) || 0) - (Number(a['UNIT']) || 0));
+  } else if (sortBy === 'type') {
+    notCounted.sort((a, b) => String(a['Material Type'] || '').localeCompare(String(b['Material Type'] || '')));
+  }
+
+  const top10 = notCounted.slice(0, 10);
+  const list = document.getElementById('top10List');
+  const badge = document.getElementById('top10Badge');
+
+  badge.textContent = formatNum(notCounted.length, 0) + ' items remaining';
+
+  if (top10.length === 0) {
+    list.innerHTML = '<div class="top10-empty">🎉 ✓ All items have been counted!</div>';
+    return;
+  }
+
+  list.innerHTML = top10.map((r, i) => {
+    const rank = i + 1;
+    const rankCls = rank === 1 ? 'top10-rank-1' : rank === 2 ? 'top10-rank-2' : rank === 3 ? 'top10-rank-3' : '';
+    const matType = String(r['Material Type'] || '').replace(/^\d+\.\s*/, '').split(' ')[0];
+    const code = r['Material Code'] || '—';
+    const desc = r['Description'] || '—';
+    const unit = Number(r['UNIT']) || 0;
+    const baseUnit = r['Base Unit'] || '';
+    const amount = Number(r['AMOUNT']) || 0;
+    const loc = r['LOCATION'] || '';
+
+    return `<div class="top10-item">
+      <div class="top10-rank ${rankCls}">${String(rank).padStart(2, '0')}</div>
+      <div class="top10-type" title="${r['Material Type'] || ''}">${matType.substring(0, 6)}</div>
+      <div class="top10-desc">
+        <span class="top10-code">${code}${loc ? ' · ' + loc : ''}</span>
+        <span class="top10-name" title="${desc}">${desc}</span>
+      </div>
+      <div class="top10-qty">
+        ${formatNum(unit, Number.isInteger(unit) ? 0 : 1)} ${baseUnit}
+        <span class="top10-qty-label">Stock Qty</span>
+      </div>
+      <div class="top10-amount">
+        ฿${formatNum(amount / 1000, 1)}<span class="kpi-unit">K</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCharts() {
+  const cats = allSummary.filter(r => /^0\d\./.test(r.materialType) && !/total/i.test(r.materialType));
+  const colors = getThemeColors();
+  const font = getFontFamily();
+
+  const ctx1 = document.getElementById('chartValue').getContext('2d');
+  if (chartValue) chartValue.destroy();
+  chartValue = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: cats.map(c => c.materialType.replace(/^\d+\.\s*/, '')),
+      datasets: [
+        { label: 'Total', data: cats.map(c => (c.stock?.amount || 0) / 1e6), backgroundColor: colors.accent, borderRadius: 3, barPercentage: 0.7 },
+        { label: 'Counted', data: cats.map(c => ((c.cycleCount?.amount || 0) + (c.physicalCount?.amount || 0)) / 1e6), backgroundColor: colors.secondary, borderRadius: 3, barPercentage: 0.7 }
+      ]
+    },
+    options: chartOptions('฿M', colors, font)
+  });
+
+  const ctx2 = document.getElementById('chartRatio').getContext('2d');
+  if (chartRatio) chartRatio.destroy();
+  const ratios = cats.map(c => {
+    const total = c.stock?.amount || 0;
+    const counted = (c.cycleCount?.amount || 0) + (c.physicalCount?.amount || 0);
+    return total ? Math.round((counted / total) * 1000) / 10 : 0;
+  });
+  chartRatio = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: cats.map(c => c.materialType.replace(/^\d+\.\s*/, '')),
+      datasets: [{
+        label: 'Count Ratio %',
+        data: ratios,
+        backgroundColor: ratios.map(r => r >= 80 ? colors.success : r >= 50 ? colors.tertiary : colors.danger),
+        borderRadius: 3,
+        barPercentage: 0.6
+      }]
+    },
+    options: { ...chartOptions('%', colors, font), indexAxis: 'y' }
+  });
+}
+
+function chartOptions(unitSuffix, colors, font) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { font: { family: font, size: 11 }, color: colors.inkSoft, boxWidth: 10, boxHeight: 10 }
+      },
+      tooltip: {
+        backgroundColor: colors.ink,
+        titleFont: { family: 'IBM Plex Mono', size: 11 },
+        bodyFont: { family: font, size: 12 },
+        padding: 10,
+        callbacks: { label: c => c.dataset.label + ': ' + formatNum(c.parsed.y ?? c.parsed.x, 1) + ' ' + unitSuffix }
+      }
+    },
+    scales: {
+      x: { grid: { color: colors.line }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: colors.inkMuted } },
+      y: { grid: { color: colors.line }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: colors.inkMuted } }
+    }
+  };
+}
+
+// ============================================================
+// TABLE
+// ============================================================
+const COLUMNS = [
+  { key: 'Material Type', label: 'Type', isNum: false, badge: true },
+  { key: '_status', label: 'Status', isNum: false, status: true },
+  { key: 'TYPE', label: 'Stock Type', isNum: false },
+  { key: 'Material Code', label: 'Material Code', isNum: false, mono: true },
+  { key: 'Description', label: 'Description', isNum: false },
+  { key: 'Base Unit', label: 'Unit', isNum: false },
+  { key: 'UNIT', label: 'Stock Qty', isNum: true },
+  { key: 'AMOUNT', label: 'Amount (฿)', isNum: true },
+  { key: 'COUNT', label: 'Counted', isNum: true },
+  { key: 'COUNT AMOUNT', label: 'Counted (฿)', isNum: true },
+  { key: 'LOCATION', label: 'Location', isNum: false },
+  { key: 'EX/DO', label: 'EX/DO', isNum: false }
+];
+
+function getCountStatus(row) {
+  const stockQty = Number(row['UNIT']) || 0;
+  const countQty = Number(row['COUNT']) || 0;
+  if (countQty === 0) return { label: '⊘ Not Counted', cls: 'red' };
+  if (Math.abs(countQty - stockQty) <= 0.01) return { label: '✓ Counted', cls: 'green' };
+  return { label: '◐ Partial', cls: 'gold' };
+}
+
+function populateFilters() {
+  const types = [...new Set(allData.map(r => r['Material Type']).filter(Boolean))].sort();
+  const locs = [...new Set(allData.map(r => r['LOCATION']).filter(Boolean))].sort();
+  document.getElementById('filterType').innerHTML = '<option value="">All Material Types</option>' + types.map(t => `<option value="${t}">${t}</option>`).join('');
+  document.getElementById('filterLocation').innerHTML = '<option value="">All Locations</option>' + locs.map(l => `<option value="${l}">${l}</option>`).join('');
+}
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const ft = document.getElementById('filterType').value;
+  const fl = document.getElementById('filterLocation').value;
+  const fc = document.getElementById('filterCountStatus').value;
+  const dFrom = document.getElementById('filterDateFrom').value;
+  const dTo = document.getElementById('filterDateTo').value;
+  const dFromDate = dFrom ? new Date(dFrom) : null;
+  const dToDate = dTo ? new Date(dTo + 'T23:59:59') : null;
+
+  filteredData = allData.filter(r => {
+    if (ft && r['Material Type'] !== ft) return false;
+    if (fl && r['LOCATION'] !== fl) return false;
+
+    // Count Status filter
+    if (fc) {
+      const stockQty = Number(r['UNIT']) || 0;
+      const countQty = Number(r['COUNT']) || 0;
+      if (fc === 'not-counted' && countQty > 0) return false;
+      if (fc === 'counted' && (countQty === 0 || Math.abs(countQty - stockQty) > 0.01)) return false;
+      if (fc === 'partial' && (countQty === 0 || Math.abs(countQty - stockQty) <= 0.01)) return false;
+    }
+
+    // Date range filter
+    if (dFromDate || dToDate) {
+      const dateStr = r['DATE OF COUNT'];
+      if (!dateStr) return false; // No date = exclude
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return false;
+      if (dFromDate && d < dFromDate) return false;
+      if (dToDate && d > dToDate) return false;
+    }
+
+    if (q) {
+      const text = [r['Material Code'], r['Description'], r['LOCATION'], r['Material Type']].join(' ').toLowerCase();
+      if (!text.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (sortColumn) sortData();
+  currentPage = 1;
+  renderTable();
+}
+
+function clearDateFilter() {
+  document.getElementById('filterDateFrom').value = '';
+  document.getElementById('filterDateTo').value = '';
+  applyFilters();
+}
+
+function sortData() {
+  filteredData.sort((a, b) => {
+    let va = a[sortColumn], vb = b[sortColumn];
+    if (typeof va === 'number' || typeof vb === 'number') {
+      va = Number(va) || 0; vb = Number(vb) || 0;
+      return sortDir === 'asc' ? va - vb : vb - va;
+    }
+    va = String(va || '').toLowerCase(); vb = String(vb || '').toLowerCase();
+    return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
+}
+
+function renderTable() {
+  const rowsPerPage = ROWS_PER_PAGE_BY_LAYOUT[document.body.getAttribute('data-layout')] || 25;
+  const head = document.getElementById('tableHead');
+  head.innerHTML = COLUMNS.map(c => {
+    const isSorted = sortColumn === c.key;
+    const ind = isSorted ? (sortDir === 'asc' ? '↑' : '↓') : '↕';
+    return `<th class="${c.isNum ? 'num' : ''} ${isSorted ? 'sorted' : ''}" onclick="toggleSort('${c.key}')">${c.label}<span class="sort-ind">${ind}</span></th>`;
+  }).join('');
+
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / rowsPerPage));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * rowsPerPage;
+  const pageData = filteredData.slice(start, start + rowsPerPage);
+
+  const body = document.getElementById('tableBody');
+  if (!pageData.length) {
+    body.innerHTML = `<tr><td colspan="${COLUMNS.length}" class="empty">ไม่พบข้อมูลตามเงื่อนไข</td></tr>`;
+  } else {
+    body.innerHTML = pageData.map(r => '<tr>' + COLUMNS.map(c => {
+      const v = r[c.key];
+      if (c.status) {
+        const s = getCountStatus(r);
+        return `<td><span class="badge ${s.cls}">${s.label}</span></td>`;
+      }
+      if (c.isNum) return `<td class="num">${v === undefined || v === '' || v === null ? '—' : formatNum(Number(v), Number.isInteger(Number(v)) ? 0 : 2)}</td>`;
+      if (c.badge && v) {
+        const cls = /finish/i.test(v) ? '' : /semi/i.test(v) ? 'teal' : /surimi/i.test(v) ? 'gold' : /pack/i.test(v) ? 'green' : /ingredient/i.test(v) ? 'red' : '';
+        return `<td><span class="badge ${cls}">${v}</span></td>`;
+      }
+      if (c.mono) return `<td style="font-family:var(--font-mono);font-size:11.5px;">${v ?? '—'}</td>`;
+      return `<td>${v ?? '—'}</td>`;
+    }).join('') + '</tr>').join('');
+  }
+
+  document.getElementById('resultCount').textContent = `${formatNum(filteredData.length)} rows · page ${currentPage} of ${totalPages}`;
+
+  const pag = document.getElementById('pagination');
+  pag.innerHTML = '';
+  const addBtn = (label, page, opts = {}) => {
+    const b = document.createElement('button');
+    b.textContent = label;
+    if (opts.active) b.classList.add('active');
+    if (opts.disabled) b.disabled = true;
+    b.onclick = () => { currentPage = page; renderTable(); };
+    pag.appendChild(b);
+  };
+  addBtn('‹', currentPage - 1, { disabled: currentPage === 1 });
+  const pageNums = paginationRange(currentPage, totalPages);
+  pageNums.forEach(p => {
+    if (p === '...') { const s = document.createElement('span'); s.textContent = '…'; s.style.padding = '0 6px'; s.style.color = 'var(--ink-muted)'; pag.appendChild(s); }
+    else addBtn(p, p, { active: p === currentPage });
+  });
+  addBtn('›', currentPage + 1, { disabled: currentPage === totalPages });
+}
+
+function paginationRange(current, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 3) return [1, 2, 3, 4, '...', total];
+  if (current >= total - 2) return [1, '...', total - 3, total - 2, total - 1, total];
+  return [1, '...', current - 1, current, current + 1, '...', total];
+}
+
+function toggleSort(col) {
+  if (sortColumn === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  else { sortColumn = col; sortDir = 'asc'; }
+  sortData();
+  renderTable();
+}
+
+// ============================================================
+// EXPORT
+// ============================================================
+function exportToExcel() {
+  const exportData = filteredData.map(r => {
+    const obj = {};
+    COLUMNS.forEach(c => {
+      if (c.status) obj[c.label] = getCountStatus(r).label;
+      else obj[c.label] = r[c.key] ?? '';
+    });
+    return obj;
+  });
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Stock Count');
+  const date = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `LUF_stock_count_${date}.xlsx`);
+}
+
+function exportToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+
+  doc.setFontSize(16);
+  doc.setTextColor(255, 51, 63);
+  doc.text('LUF', 40, 40);
+  doc.setTextColor(26, 26, 26);
+  doc.text('Stock Count Summary - FY2026', 75, 40);
+  doc.setFontSize(10);
+  doc.setTextColor(120);
+  doc.text(`Generated: ${new Date().toLocaleString('en-GB')}  ·  ${filteredData.length} rows`, 40, 58);
+
+  doc.autoTable({
+    head: [COLUMNS.map(c => c.label)],
+    body: filteredData.slice(0, 500).map(r => COLUMNS.map(c => {
+      if (c.status) return getCountStatus(r).label;
+      const v = r[c.key];
+      if (v === null || v === undefined) return '';
+      if (c.isNum && !isNaN(Number(v))) return formatNum(Number(v), Number.isInteger(Number(v)) ? 0 : 2);
+      return String(v);
+    })),
+    startY: 75,
+    styles: { fontSize: 7, cellPadding: 4 },
+    headStyles: { fillColor: [255, 51, 63], textColor: 255, fontSize: 7.5, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [250, 250, 250] },
+    columnStyles: { 4: { cellWidth: 140 } }
+  });
+
+  if (filteredData.length > 500) {
+    doc.setFontSize(9);
+    doc.setTextColor(198, 40, 40);
+    doc.text(`* Showing 500 of ${filteredData.length} rows. Use Excel export for full data.`, 40, doc.lastAutoTable.finalY + 20);
+  }
+
+  const date = new Date().toISOString().slice(0, 10);
+  doc.save(`LUF_stock_count_${date}.pdf`);
+}
+
+// ============================================================
+// DEMO DATA
+// ============================================================
+function getDemoData() {
+  // สร้างวันที่สำหรับ demo (14 วันล่าสุด)
+  const today = new Date();
+  const dateStr = (offset) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - offset);
+    return d.toISOString().slice(0, 10);
+  };
+
+  // สร้าง demo data 30 รายการ - บางส่วนนับแล้ว บางส่วนยังไม่นับ
+  const demoData = [
+    // ⊘ NOT COUNTED (high value items first - จะเป็น Top 10)
+    { 'Material Type': '04. SURIMI', 'TYPE': 'STOCK', 'Material Code': 'SU-PREMIUM-001', 'Description': 'PREMIUM ALASKA POLLOCK SURIMI SA-GRADE 50KG', 'Base Unit': 'KG', 'UNIT': 80000, 'AMOUNT': 8800000, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'COLD-STORAGE-A', 'EX/DO': 'EX', 'DATE OF COUNT': null },
+    { 'Material Type': '04. SURIMI', 'TYPE': 'STOCK', 'Material Code': 'SU-GRADE-A-002', 'Description': 'SURIMI GRADE A FROZEN BLOCK', 'Base Unit': 'KG', 'UNIT': 65000, 'AMOUNT': 6175000, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'COLD-STORAGE-B', 'EX/DO': 'EX', 'DATE OF COUNT': null },
+    { 'Material Type': '01. FINISH', 'TYPE': 'STOCK', 'Material Code': 'DE-LOBSTER-099', 'Description': 'LOBSTER TAIL/IQF/PREMIUM/5KG X 10', 'Base Unit': 'KG', 'UNIT': 1200, 'AMOUNT': 4200000, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'EXPORT-A', 'EX/DO': 'EX', 'DATE OF COUNT': null },
+    { 'Material Type': '01. FINISH', 'TYPE': 'STOCK', 'Material Code': 'DE-TUNA-150', 'Description': 'YELLOWFIN TUNA LOIN/VP/AAA GRADE', 'Base Unit': 'KG', 'UNIT': 800, 'AMOUNT': 3680000, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'EXPORT-B', 'EX/DO': 'EX', 'DATE OF COUNT': null },
+    { 'Material Type': '05. INGREDIENT', 'TYPE': 'STOCK', 'Material Code': 'IN-SAFFRON-001', 'Description': 'PREMIUM SAFFRON IMPORTED', 'Base Unit': 'KG', 'UNIT': 50, 'AMOUNT': 2500000, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'DRY-STORAGE-1', 'EX/DO': 'DO', 'DATE OF COUNT': null },
+    { 'Material Type': '03. SEAFOOD', 'TYPE': 'STOCK', 'Material Code': 'SF-SCALLOP-001', 'Description': 'JAPANESE SCALLOP A-GRADE/IQF', 'Base Unit': 'KG', 'UNIT': 500, 'AMOUNT': 1850000, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'COLD-STORAGE-A', 'EX/DO': 'EX', 'DATE OF COUNT': null },
+    { 'Material Type': '01. FINISH', 'TYPE': 'STOCK', 'Material Code': 'DE-TH-0006-0-X-9', 'Description': 'SEAFOOD SALAD MIX (CHUNK)/VP/10PCK X 1KG', 'Base Unit': 'KG', 'UNIT': 150, 'AMOUNT': 1171671, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'EXPORT', 'EX/DO': 1, 'DATE OF COUNT': null },
+    { 'Material Type': '02. SEMI', 'TYPE': 'STOCK', 'Material Code': 'SM-FILLING-200', 'Description': 'CRAB FILLING MIX SEMI-FINISHED', 'Base Unit': 'KG', 'UNIT': 3500, 'AMOUNT': 980000, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'DOMESTIC', 'EX/DO': 'DO', 'DATE OF COUNT': null },
+    { 'Material Type': '06. PACKAGING', 'TYPE': 'STOCK', 'Material Code': 'PK-PREMIUM-LID', 'Description': 'PREMIUM PACKAGING LIDS (GOLD-FOIL)', 'Base Unit': 'PC', 'UNIT': 50000, 'AMOUNT': 875000, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'WAREHOUSE-A', 'EX/DO': 1, 'DATE OF COUNT': null },
+    { 'Material Type': '01. FINISH', 'TYPE': 'STOCK', 'Material Code': 'DE-TH-0009-0-X-9', 'Description': 'MINCED CRAB STICK/IQF/10 PCK X 1 KG', 'Base Unit': 'KG', 'UNIT': 315, 'AMOUNT': 502103, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'EXPORT', 'EX/DO': 1, 'DATE OF COUNT': null },
+    { 'Material Type': '01. FINISH', 'TYPE': 'STOCK', 'Material Code': 'DE-TH-0097-0-H-9', 'Description': 'SUSHI MAKI STICK/VP/20 X500G', 'Base Unit': 'KG', 'UNIT': 240, 'AMOUNT': 206335, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'EXPORT', 'EX/DO': 1, 'DATE OF COUNT': null },
+    { 'Material Type': '06. PACKAGING', 'TYPE': 'STOCK', 'Material Code': 'PK-LBL-002', 'Description': 'PRODUCT LABEL/STICKER', 'Base Unit': 'PC', 'UNIT': 10000, 'AMOUNT': 85000, 'COUNT': null, 'COUNT AMOUNT': null, 'LOCATION': 'WAREHOUSE-B', 'EX/DO': 'DO', 'DATE OF COUNT': null },
+
+    // ✓ COUNTED (วันต่างๆ ใน 14 วันที่ผ่านมา)
+    { 'Material Type': '02. SEMI', 'TYPE': 'STOCK', 'Material Code': 'SM-0123-0-A', 'Description': 'SURIMI BLOCK/FROZEN/20KG', 'Base Unit': 'KG', 'UNIT': 1800, 'AMOUNT': 158400, 'COUNT': 1800, 'COUNT AMOUNT': 158400, 'LOCATION': 'DOMESTIC', 'EX/DO': 'DO', 'DATE OF COUNT': dateStr(0) },
+    { 'Material Type': '02. SEMI', 'TYPE': 'STOCK', 'Material Code': 'SM-0124-0-B', 'Description': 'SURIMI CHUNK FROZEN/15KG', 'Base Unit': 'KG', 'UNIT': 900, 'AMOUNT': 81000, 'COUNT': 900, 'COUNT AMOUNT': 81000, 'LOCATION': 'DOMESTIC', 'EX/DO': 'DO', 'DATE OF COUNT': dateStr(0) },
+    { 'Material Type': '04. SURIMI', 'TYPE': 'STOCK', 'Material Code': 'SU-2024-0-X', 'Description': 'ALASKA POLLOCK SURIMI A-GRADE', 'Base Unit': 'KG', 'UNIT': 25000, 'AMOUNT': 2150000, 'COUNT': 25000, 'COUNT AMOUNT': 2150000, 'LOCATION': 'EXPORT', 'EX/DO': 'EX', 'DATE OF COUNT': dateStr(1) },
+    { 'Material Type': '04. SURIMI', 'TYPE': 'STOCK', 'Material Code': 'SU-2025-0-Y', 'Description': 'POLLOCK SURIMI B-GRADE', 'Base Unit': 'KG', 'UNIT': 15000, 'AMOUNT': 1200000, 'COUNT': 15000, 'COUNT AMOUNT': 1200000, 'LOCATION': 'EXPORT', 'EX/DO': 'EX', 'DATE OF COUNT': dateStr(1) },
+    { 'Material Type': '05. INGREDIENT', 'TYPE': 'STOCK', 'Material Code': 'IN-0042', 'Description': 'WHEAT STARCH', 'Base Unit': 'KG', 'UNIT': 500, 'AMOUNT': 12500, 'COUNT': 480, 'COUNT AMOUNT': 12000, 'LOCATION': 'DOMESTIC', 'EX/DO': 'DO', 'DATE OF COUNT': dateStr(2) },
+    { 'Material Type': '05. INGREDIENT', 'TYPE': 'STOCK', 'Material Code': 'IN-0043', 'Description': 'TAPIOCA STARCH', 'Base Unit': 'KG', 'UNIT': 1000, 'AMOUNT': 25000, 'COUNT': 1000, 'COUNT AMOUNT': 25000, 'LOCATION': 'DOMESTIC', 'EX/DO': 'DO', 'DATE OF COUNT': dateStr(2) },
+    { 'Material Type': '05. INGREDIENT', 'TYPE': 'STOCK', 'Material Code': 'IN-0044', 'Description': 'SALT INDUSTRIAL GRADE', 'Base Unit': 'KG', 'UNIT': 2000, 'AMOUNT': 18000, 'COUNT': 2000, 'COUNT AMOUNT': 18000, 'LOCATION': 'DOMESTIC', 'EX/DO': 'DO', 'DATE OF COUNT': dateStr(2) },
+    { 'Material Type': '06. PACKAGING', 'TYPE': 'STOCK', 'Material Code': 'PK-BOX-001', 'Description': 'CORRUGATED BOX 30x20x15', 'Base Unit': 'PC', 'UNIT': 5000, 'AMOUNT': 75000, 'COUNT': 5000, 'COUNT AMOUNT': 75000, 'LOCATION': 'WAREHOUSE-A', 'EX/DO': 1, 'DATE OF COUNT': dateStr(3) },
+    { 'Material Type': '06. PACKAGING', 'TYPE': 'STOCK', 'Material Code': 'PK-BOX-002', 'Description': 'CORRUGATED BOX 25x15x10', 'Base Unit': 'PC', 'UNIT': 8000, 'AMOUNT': 96000, 'COUNT': 8000, 'COUNT AMOUNT': 96000, 'LOCATION': 'WAREHOUSE-A', 'EX/DO': 1, 'DATE OF COUNT': dateStr(3) },
+    { 'Material Type': '06. PACKAGING', 'TYPE': 'STOCK', 'Material Code': 'PK-FILM-001', 'Description': 'PE FILM WRAP', 'Base Unit': 'PC', 'UNIT': 200, 'AMOUNT': 12000, 'COUNT': 200, 'COUNT AMOUNT': 12000, 'LOCATION': 'WAREHOUSE-B', 'EX/DO': 1, 'DATE OF COUNT': dateStr(3) },
+    { 'Material Type': '01. FINISH', 'TYPE': 'STOCK', 'Material Code': 'DE-TH-0150-0', 'Description': 'TEMPURA SHRIMP/IQF/1KG X 10', 'Base Unit': 'KG', 'UNIT': 800, 'AMOUNT': 96000, 'COUNT': 600, 'COUNT AMOUNT': 72000, 'LOCATION': 'EXPORT', 'EX/DO': 'EX', 'DATE OF COUNT': dateStr(5) },
+    { 'Material Type': '01. FINISH', 'TYPE': 'STOCK', 'Material Code': 'DE-TH-0151-0', 'Description': 'TEMPURA SQUID/IQF/1KG X 10', 'Base Unit': 'KG', 'UNIT': 600, 'AMOUNT': 72000, 'COUNT': 600, 'COUNT AMOUNT': 72000, 'LOCATION': 'EXPORT', 'EX/DO': 'EX', 'DATE OF COUNT': dateStr(5) },
+    { 'Material Type': '02. SEMI', 'TYPE': 'STOCK', 'Material Code': 'SM-0125-0-C', 'Description': 'CRABSTICK MIX/SEMI-FROZEN', 'Base Unit': 'KG', 'UNIT': 1200, 'AMOUNT': 108000, 'COUNT': 1200, 'COUNT AMOUNT': 108000, 'LOCATION': 'DOMESTIC', 'EX/DO': 'DO', 'DATE OF COUNT': dateStr(7) },
+    { 'Material Type': '06. PACKAGING', 'TYPE': 'STOCK', 'Material Code': 'PK-TAPE-001', 'Description': 'PACKING TAPE BROWN', 'Base Unit': 'PC', 'UNIT': 500, 'AMOUNT': 7500, 'COUNT': 500, 'COUNT AMOUNT': 7500, 'LOCATION': 'WAREHOUSE-A', 'EX/DO': 1, 'DATE OF COUNT': dateStr(8) },
+    { 'Material Type': '06. PACKAGING', 'TYPE': 'STOCK', 'Material Code': 'PK-TAPE-002', 'Description': 'PACKING TAPE CLEAR', 'Base Unit': 'PC', 'UNIT': 300, 'AMOUNT': 4500, 'COUNT': 300, 'COUNT AMOUNT': 4500, 'LOCATION': 'WAREHOUSE-A', 'EX/DO': 1, 'DATE OF COUNT': dateStr(10) },
+    { 'Material Type': '05. INGREDIENT', 'TYPE': 'STOCK', 'Material Code': 'IN-0045', 'Description': 'SUGAR REFINED', 'Base Unit': 'KG', 'UNIT': 1500, 'AMOUNT': 22500, 'COUNT': 1500, 'COUNT AMOUNT': 22500, 'LOCATION': 'DOMESTIC', 'EX/DO': 'DO', 'DATE OF COUNT': dateStr(12) },
+    { 'Material Type': '01. FINISH', 'TYPE': 'STOCK', 'Material Code': 'DE-TH-0200-0', 'Description': 'IMITATION CRAB MEAT/IQF', 'Base Unit': 'KG', 'UNIT': 1500, 'AMOUNT': 187500, 'COUNT': 1500, 'COUNT AMOUNT': 187500, 'LOCATION': 'EXPORT', 'EX/DO': 'EX', 'DATE OF COUNT': dateStr(13) }
+  ];
+
+  return {
+    summary: { summary: [
+      { materialType: '01. FINISH', stock: { item: 465, amount: 143461138.66 }, cycleCount: { item: 171, amount: 20472064.62, diffAmount: -7939.54 }, physicalCount: { item: 679, amount: 118058426.58, diffAmount: -17417.58 }, remaining: { item: -385 }, ratio: { item: 1.827957, amount: 0.965631 } },
+      { materialType: '02. SEMI', stock: { item: 108, amount: 20247577.54 }, cycleCount: { item: 32, amount: 4413948.89, diffAmount: -7991.25 }, physicalCount: { item: 176, amount: 14238396.03, diffAmount: 0 }, remaining: { item: -100 }, ratio: { item: 1.925926, amount: 0.921214 } },
+      { materialType: '03. SEAFOOD', stock: { item: 6, amount: 3601112.47 }, cycleCount: { item: 7, amount: 2261315.44, diffAmount: 0 }, physicalCount: { item: 0, amount: 0, diffAmount: 0 }, remaining: { item: -1 }, ratio: { item: 1.166667, amount: 0.627949 } },
+      { materialType: '04. SURIMI', stock: { item: 46, amount: 383911628.47 }, cycleCount: { item: 64, amount: 62604560.03, diffAmount: 0 }, physicalCount: { item: 20, amount: 30527770.01, diffAmount: 0 }, remaining: { item: -38 }, ratio: { item: 1.826087, amount: 0.242588 } },
+      { materialType: '05. INGREDIENT', stock: { item: 159, amount: 69443528.07 }, cycleCount: { item: 125, amount: 16381050.93, diffAmount: 0 }, physicalCount: { item: 65, amount: 41880927.37, diffAmount: -33.75 }, remaining: { item: -31 }, ratio: { item: 1.194969, amount: 0.838984 } },
+      { materialType: '06. PACKAGING Total', stock: { item: 1425, amount: 29410979.15 }, cycleCount: { item: 1814, amount: 16984019.59, diffAmount: 0 }, physicalCount: { item: 307, amount: 6151238.87, diffAmount: 0 }, remaining: { item: -696 }, ratio: { item: 1.488421, amount: 0.78662 } },
+      { materialType: 'Grand Total', stock: { item: 2209, amount: 650075964.36 }, cycleCount: { item: 2213, amount: 123116959.50, diffAmount: -15930.79 }, physicalCount: { item: 1247, amount: 210856758.86, diffAmount: -17451.33 }, remaining: { item: -1251 }, ratio: { item: 1.56632, amount: 0.513746 } }
+    ]},
+    data: { data: demoData },
+    lastUpdated: new Date().toISOString()
+  };
+}
+</script>
+</body>
+</html>
