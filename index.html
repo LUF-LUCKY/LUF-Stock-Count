@@ -1434,7 +1434,7 @@ tbody tr:last-child td { border-bottom: none; }
     </div>
     <div class="daily-grid">
       <div class="daily-card">
-        <div class="chart-card-title">Items counted per day</div>
+        <div class="chart-card-title">Sum of items counted per day</div>
         <div class="chart-card-subtitle">จำนวนรายการที่ถูกนับในแต่ละวัน (Last 14 days)</div>
         <div class="chart-wrap" style="height: 240px;"><canvas id="chartDaily"></canvas></div>
       </div>
@@ -1808,16 +1808,22 @@ function getFontFamily() {
 let chartDaily;
 
 function renderDailyProgress() {
-  // Group items by DATE OF COUNT
-  const byDate = {};
-  allData.forEach(r => {
-    const dateStr = r['DATE OF COUNT'];
-    if (!dateStr) return;
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return;
-    const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
-    byDate[key] = (byDate[key] || 0) + 1;
-  });
+  // Sum ITEM by DATE OF COUNT
+const byDate = {};
+allData.forEach(r => {
+  const dateStr = r['DATE OF COUNT'];
+  if (!dateStr) return;
+
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return;
+
+  const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+
+  // Column R = ITEM
+  const itemQty = Number(r['ITEM']) || 0;
+
+  byDate[key] = (byDate[key] || 0) + itemQty;
+});
 
   const sortedDates = Object.keys(byDate).sort();
   const totalActiveDays = sortedDates.length;
