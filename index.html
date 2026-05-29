@@ -1797,9 +1797,9 @@ function shadeColor(hex, percent) {
 }
 
 function resetAll() {
-  setTheme('luf');
-  setFont('ibm');
-  setLayout('spacious');
+  setTheme('corporate');
+  setFont('prompt');
+  setLayout('wide');
   localStorage.removeItem('dashboard-custom-accent');
 }
 
@@ -1860,16 +1860,28 @@ async function loadData() {
     if (USE_DEMO_DATA) {
       json = getDemoData();
     } else {
-      const res = await fetch(API_URL + '?action=all');
-      json = await res.json();
-      if (!json.success) throw new Error(json.error || 'Unknown error');
+      json = await fetchApi('all');
     }
 
     allSummary = json.summary?.summary || [];
     allData = json.data?.data || [];
-    allSchedule = Array.isArray(json.schedule)
-          ? json.schedule
-          : (json.schedule?.schedule || []);
+    allSchedule = extractScheduleRows(json);
+
+    // Fallback: ถ้า action=all ยังไม่ส่ง schedule ให้ลองดึงเฉพาะ action=schedule อีกครั้ง
+    if (!USE_DEMO_DATA && (!allSchedule || !allSchedule.length)) {
+      try {
+        const scheduleJson = await fetchApi('schedule');
+        const scheduleRows = extractScheduleRows(scheduleJson);
+        if (scheduleRows.length) {
+          allSchedule = scheduleRows;
+        }
+      } catch (scheduleErr) {
+        console.warn('Schedule fallback failed:', scheduleErr);
+      }
+    }
+
+    console.log('Stock rows:', allData.length);
+    console.log('Schedule rows:', allSchedule.length, allSchedule.slice(0, 3));
 
     renderKPI();
     renderCharts();
@@ -1893,6 +1905,35 @@ async function loadData() {
     document.getElementById('refreshBtn').disabled = false;
     document.getElementById('refreshIcon').style.animation = '';
   }
+}
+
+async function fetchApi(action) {
+  // ตัด query string ออกก่อน เพื่อป้องกัน URL ซ้ำแบบ /exec?action=all?action=all
+  const baseUrl = API_URL.split('?')[0];
+  const url = baseUrl + '?action=' + encodeURIComponent(action) + '&t=' + Date.now();
+
+  const res = await fetch(url, { cache: 'no-store' });
+  const json = await res.json();
+
+  if (!json.success) {
+    throw new Error(json.error || 'Unknown error from Apps Script');
+  }
+
+  return json;
+}
+
+function extractScheduleRows(json) {
+  if (!json) return [];
+
+  // รองรับกรณีต่าง ๆ จาก Apps Script:
+  // 1) { schedule: [...] }
+  // 2) { schedule: { schedule: [...] } }
+  // 3) { data: { schedule: [...] } }
+  if (Array.isArray(json.schedule)) return json.schedule;
+  if (Array.isArray(json.schedule?.schedule)) return json.schedule.schedule;
+  if (Array.isArray(json.data?.schedule)) return json.data.schedule;
+
+  return [];
 }
 
 function setStatus(type, text) {
@@ -2427,7 +2468,14 @@ function renderSchedule() {
   if (!listEl) return;
 
   if (!allSchedule || !allSchedule.length) {
-    listEl.innerHTML = '<div class="empty">No schedule data found</div>';
+    listEl.innerHTML = `
+      <div class="empty">
+        No schedule data found<br>
+        <span style="font-size:11px;color:var(--ink-muted);">
+          ตรวจสอบว่า Apps Script URL มีข้อมูล schedule จาก ?action=schedule แล้วหรือยัง
+        </span>
+      </div>
+    `;
 
     document.getElementById('scheduleToday').textContent = '0';
     document.getElementById('scheduleUpcoming').textContent = '0';
@@ -2440,23 +2488,32 @@ function renderSchedule() {
   const today = allSchedule.filter(r => r.status === 'Today');
   const upcoming = allSchedule.filter(r => r.status === 'Planned' || r.status === 'Today');
   const overdue = allSchedule.filter(r => r.status === 'Overdue');
+  const completed = allSchedule.filter(r => r.status === 'Completed');
 
   document.getElementById('scheduleToday').textContent = formatNum(today.length, 0);
   document.getElementById('scheduleUpcoming').textContent = formatNum(upcoming.length, 0);
   document.getElementById('scheduleOverdue').textContent = formatNum(overdue.length, 0);
   document.getElementById('scheduleTotal').textContent = formatNum(allSchedule.length, 0);
 
-  const nextList = allSchedule
+  let displayList = allSchedule
     .filter(r => r.status === 'Today' || r.status === 'Planned')
     .sort((a, b) => new Date(a.planDate) - new Date(b.planDate))
     .slice(0, 12);
 
-  if (!nextList.length) {
-    listEl.innerHTML = '<div class="empty">No upcoming schedule</div>';
+  // ถ้าไม่มี Upcoming ให้แสดง Overdue ล่าสุดแทน เพื่อไม่ให้หน้าว่าง
+  if (!displayList.length) {
+    displayList = allSchedule
+      .slice()
+      .sort((a, b) => new Date(b.planDate) - new Date(a.planDate))
+      .slice(0, 12);
+  }
+
+  if (!displayList.length) {
+    listEl.innerHTML = '<div class="empty">No schedule rows to display</div>';
     return;
   }
 
-  listEl.innerHTML = nextList.map(r => {
+  listEl.innerHTML = displayList.map(r => {
     const statusClass = String(r.status || '').toLowerCase();
 
     return `
