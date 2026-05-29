@@ -1156,6 +1156,127 @@ tbody tr:last-child td { border-bottom: none; }
   height: 16px;
 }
 
+
+/* ============== SCHEDULE ============== */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .schedule-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.schedule-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  padding: var(--card-pad);
+}
+
+.schedule-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.schedule-item {
+  display: grid;
+  grid-template-columns: 110px 120px 1fr 120px;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+
+.schedule-date {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.schedule-area {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  text-align: center;
+}
+
+.schedule-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.schedule-person {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.schedule-time {
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+.schedule-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.schedule-status.today {
+  background: var(--tertiary-soft);
+  color: var(--tertiary);
+}
+
+.schedule-status.planned {
+  background: var(--secondary-soft);
+  color: var(--secondary);
+}
+
+.schedule-status.overdue {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.schedule-status.completed {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+@media (max-width: 640px) {
+  .schedule-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .schedule-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ============== MOBILE ============== */
 @media (max-width: 640px) {
   .container { padding: 20px 16px 40px; }
@@ -1530,6 +1651,50 @@ tbody tr:last-child td { border-bottom: none; }
     </div>
   </section>
 
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span class="section-title-num">05</span> Inventory Cycle Count Schedule
+      </h2>
+      <span class="section-sub">แผนการนับสต็อกตามพื้นที่และผู้รับผิดชอบ</span>
+    </div>
+
+    <div class="schedule-grid">
+      <div class="schedule-card">
+        <div class="chart-card-title">Upcoming schedule</div>
+        <div class="chart-card-subtitle">รายการแผนการนับที่กำลังจะมาถึง</div>
+        <div class="schedule-list" id="scheduleList"></div>
+      </div>
+
+      <div class="schedule-stats">
+        <div class="daily-stat-card">
+          <div class="kpi-label">Today</div>
+          <div class="kpi-value" id="scheduleToday">—</div>
+          <div class="kpi-sublabel">แผนที่ต้องนับวันนี้</div>
+        </div>
+
+        <div class="daily-stat-card">
+          <div class="kpi-label">Upcoming</div>
+          <div class="kpi-value" id="scheduleUpcoming">—</div>
+          <div class="kpi-sublabel">แผนที่ยังไม่ถึงกำหนด</div>
+        </div>
+
+        <div class="daily-stat-card">
+          <div class="kpi-label">Overdue</div>
+          <div class="kpi-value" id="scheduleOverdue">—</div>
+          <div class="kpi-sublabel">แผนที่เลยกำหนด</div>
+        </div>
+
+        <div class="daily-stat-card">
+          <div class="kpi-label">Total Plan</div>
+          <div class="kpi-value" id="scheduleTotal">—</div>
+          <div class="kpi-sublabel">จำนวนแผนทั้งหมด</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer class="footer">
     <div class="footer-brand">
       <img src="logo.png" alt="LUF">
@@ -1664,11 +1829,13 @@ document.addEventListener('click', (e) => {
 // ============================================================
 let allData = [];
 let allSummary = [];
+let allSchedule = [];
 let filteredData = [];
 let currentPage = 1;
 let sortColumn = null;
 let sortDir = 'asc';
 let chartValue, chartRatio;
+
 
 document.addEventListener('DOMContentLoaded', () => {
   loadSavedPreferences();
@@ -1689,6 +1856,7 @@ async function loadData() {
 
   try {
     let json;
+
     if (USE_DEMO_DATA) {
       json = getDemoData();
     } else {
@@ -1699,21 +1867,27 @@ async function loadData() {
 
     allSummary = json.summary?.summary || [];
     allData = json.data?.data || [];
+    allSchedule = Array.isArray(json.schedule)
+          ? json.schedule
+          : (json.schedule?.schedule || []);
 
     renderKPI();
     renderCharts();
     renderDailyProgress();
     renderTop10();
+    renderSchedule();
     populateFilters();
     applyFilters();
 
     const ts = json.lastUpdated || new Date().toISOString();
     document.getElementById('lastUpdate').textContent = 'Updated ' + formatTime(ts);
     setStatus('connected', USE_DEMO_DATA ? 'DEMO MODE' : 'CONNECTED');
+
   } catch (err) {
     console.error(err);
     setStatus('error', 'ERROR');
     document.getElementById('lastUpdate').textContent = err.message;
+
   } finally {
     document.getElementById('loadingOverlay').style.display = 'none';
     document.getElementById('refreshBtn').disabled = false;
@@ -2244,6 +2418,86 @@ function exportToPDF() {
 
   const date = new Date().toISOString().slice(0, 10);
   doc.save(`LUF_stock_count_${date}.pdf`);
+}
+
+
+function renderSchedule() {
+  const listEl = document.getElementById('scheduleList');
+
+  if (!listEl) return;
+
+  if (!allSchedule || !allSchedule.length) {
+    listEl.innerHTML = '<div class="empty">No schedule data found</div>';
+
+    document.getElementById('scheduleToday').textContent = '0';
+    document.getElementById('scheduleUpcoming').textContent = '0';
+    document.getElementById('scheduleOverdue').textContent = '0';
+    document.getElementById('scheduleTotal').textContent = '0';
+
+    return;
+  }
+
+  const today = allSchedule.filter(r => r.status === 'Today');
+  const upcoming = allSchedule.filter(r => r.status === 'Planned' || r.status === 'Today');
+  const overdue = allSchedule.filter(r => r.status === 'Overdue');
+
+  document.getElementById('scheduleToday').textContent = formatNum(today.length, 0);
+  document.getElementById('scheduleUpcoming').textContent = formatNum(upcoming.length, 0);
+  document.getElementById('scheduleOverdue').textContent = formatNum(overdue.length, 0);
+  document.getElementById('scheduleTotal').textContent = formatNum(allSchedule.length, 0);
+
+  const nextList = allSchedule
+    .filter(r => r.status === 'Today' || r.status === 'Planned')
+    .sort((a, b) => new Date(a.planDate) - new Date(b.planDate))
+    .slice(0, 12);
+
+  if (!nextList.length) {
+    listEl.innerHTML = '<div class="empty">No upcoming schedule</div>';
+    return;
+  }
+
+  listEl.innerHTML = nextList.map(r => {
+    const statusClass = String(r.status || '').toLowerCase();
+
+    return `
+      <div class="schedule-item">
+        <div class="schedule-date">${formatScheduleDisplayDate(r.planDate)}</div>
+        <div class="schedule-area">${escapeHtml(r.area || '')}</div>
+        <div class="schedule-main">
+          <div class="schedule-person">${escapeHtml(r.person || '')}</div>
+          <div class="schedule-time">
+            ${escapeHtml(r.day || '')} · ${escapeHtml(r.time || '')} · ${escapeHtml(r.location || '')}
+          </div>
+        </div>
+        <div class="schedule-status ${statusClass}">
+          ${escapeHtml(r.status || '')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function formatScheduleDisplayDate(dateStr) {
+  if (!dateStr) return '—';
+
+  const d = new Date(dateStr);
+
+  if (isNaN(d.getTime())) return dateStr;
+
+  return d.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+}
+
+function escapeHtml(v) {
+  return String(v ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
 // ============================================================
