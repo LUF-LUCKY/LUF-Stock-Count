@@ -1162,7 +1162,7 @@ tbody tr:last-child td { border-bottom: none; }
 }
 </style>
 </head>
-<body data-theme="luf" data-font="ibm" data-layout="spacious">
+<body data-theme="corporate" data-font="prompt" data-layout="Wide">
 
 <!-- THEME TRIGGER -->
 <button class="theme-trigger" onclick="toggleThemePanel()" aria-label="Open settings">⚙</button>
@@ -1624,9 +1624,9 @@ function resetAll() {
 }
 
 function loadSavedPreferences() {
-  const theme = localStorage.getItem('dashboard-theme') || 'luf';
-  const font = localStorage.getItem('dashboard-font') || 'ibm';
-  const layout = localStorage.getItem('dashboard-layout') || 'spacious';
+  const theme = localStorage.getItem('dashboard-theme') || 'corporate';
+  const font = localStorage.getItem('dashboard-font') || 'prompt';
+  const layout = localStorage.getItem('dashboard-layout') || 'wide';
   setTheme(theme);
   setFont(font);
   setLayout(layout);
